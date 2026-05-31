@@ -1,0 +1,217 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-emerald: var(--emerald);
+  --color-emerald-bright: var(--emerald-bright);
+  --color-text-light: var(--text-light);
+  --color-text-muted: var(--text-muted);
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(0.05 0.01 260);
+  --foreground: oklch(1 0 0);
+  --card: oklch(0.09 0.012 260 / 0.55);
+  --card-foreground: oklch(1 0 0);
+  --popover: oklch(0.08 0.012 260);
+  --popover-foreground: oklch(1 0 0);
+  --primary: oklch(0.78 0.19 152);
+  --primary-foreground: oklch(0.08 0.01 260);
+  --secondary: oklch(0.18 0.015 260);
+  --secondary-foreground: oklch(0.98 0 0);
+  --muted: oklch(0.15 0.012 260);
+  --muted-foreground: oklch(0.7 0.02 250);
+  --accent: oklch(0.78 0.19 152);
+  --accent-foreground: oklch(0.08 0.01 260);
+  --destructive: oklch(0.62 0.24 27);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.78 0.19 152 / 0.18);
+  --input: oklch(0.2 0.015 260);
+  --ring: oklch(0.78 0.19 152);
+
+  --emerald: oklch(0.72 0.2 152);
+  --emerald-bright: oklch(0.82 0.22 152);
+  --text-light: oklch(0.88 0.015 250);
+  --text-muted: oklch(0.68 0.02 250);
+
+  --glow-emerald: 0 0 24px oklch(0.78 0.19 152 / 0.35), 0 0 60px oklch(0.78 0.19 152 / 0.18);
+  --glow-emerald-strong: 0 0 32px oklch(0.78 0.19 152 / 0.55), 0 0 90px oklch(0.78 0.19 152 / 0.28);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-display);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    background: linear-gradient(140deg, oklch(0.12 0.015 260 / 0.6), oklch(0.07 0.01 260 / 0.4));
+    backdrop-filter: blur(12px);
+    border: 1px solid oklch(0.78 0.19 152 / 0.15);
+    box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.04);
+    transition: all 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .glass-card:hover {
+    border-color: oklch(0.78 0.19 152 / 0.5);
+    box-shadow: var(--glow-emerald), inset 0 1px 0 oklch(1 0 0 / 0.06);
+    transform: translateY(-4px);
+  }
+
+  .text-glow {
+    text-shadow: 0 0 24px oklch(0.78 0.19 152 / 0.55), 0 0 60px oklch(0.78 0.19 152 / 0.25);
+  }
+
+  .emerald-glow {
+    box-shadow: var(--glow-emerald);
+  }
+
+  .emerald-glow-strong {
+    box-shadow: var(--glow-emerald-strong);
+  }
+
+  .grid-bg {
+    background-image:
+      linear-gradient(oklch(0.78 0.19 152 / 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, oklch(0.78 0.19 152 / 0.06) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: grid-pan 30s linear infinite;
+  }
+
+  .radial-glow {
+    background: radial-gradient(ellipse at center, oklch(0.78 0.19 152 / 0.15) 0%, transparent 60%);
+    animation: pulse-glow 8s ease-in-out infinite;
+  }
+}
+
+@keyframes grid-pan {
+  0% { background-position: 0 0; }
+  100% { background-position: 60px 60px; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-left {
+  from { opacity: 0; transform: translateX(-24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fade-right {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes float-soft {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes pulse-border {
+  0%, 100% { box-shadow: 0 0 0 0 oklch(0.78 0.19 152 / 0.5); }
+  50% { box-shadow: 0 0 0 8px oklch(0.78 0.19 152 / 0); }
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+@keyframes radar-sweep {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes drift {
+  0% { transform: translate(0, 0); }
+  50% { transform: translate(20px, -30px); }
+  100% { transform: translate(0, 0); }
+}
+
+.reveal {
+  opacity: 0;
+}
+
+.reveal.is-visible {
+  animation: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.reveal-left.is-visible {
+  animation: fade-left 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.reveal-right.is-visible {
+  animation: fade-right 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.reveal-scale.is-visible {
+  animation: scale-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.float-soft {
+  animation: float-soft 5s ease-in-out infinite;
+}
+
+.pulse-border {
+  animation: pulse-border 2.4s ease-out infinite;
+}
+
+.cursor-blink::after {
+  content: "▍";
+  color: var(--emerald-bright);
+  animation: blink 1s steps(2) infinite;
+  margin-left: 2px;
+}
