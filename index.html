@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXORA AI | Your AI Co-Pilot for Smarter Workflows</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        outfit: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            purple: '#8B5CF6',
+                            blue: '#3B82F6',
+                            cyan: '#06B6D4',
+                            darkObsidian: '#090A0F',
+                            darkCard: '#12131C',
+                            lightBg: '#F8FAFC',
+                            lightCard: '#FFFFFF',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-delayed': 'float 6s ease-in-out infinite 3s',
+                        'marquee': 'marquee 30s linear infinite',
+                        'glow': 'glow 8s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-15px)' },
+                        },
+                        marquee: {
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-50%)' }
+                        },
+                        glow: {
+                            '0%': { opacity: '0.4', filter: 'hue-rotate(0deg)' },
+                            '100%': { opacity: '0.8', filter: 'hue-rotate(360deg)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Custom animations, custom cursor, scrollbars and radial overlays */
+        .neon-glow-primary {
+            box-shadow: 0 0 40px -5px rgba(139, 92, 246, 0.4);
+        }
+        .neon-glow-cyan {
+            box-shadow: 0 0 40px -5px rgba(6, 182, 212, 0.4);
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090a0f;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27273a;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #444465;
+        }
+        
+        /* Glassmorphism custom rules */
+        .glass-panel {
+            background: rgba(18, 19, 28, 0.6);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .light .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Mouse follow cards */
+        .interactive-card {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .interactive-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(800px circle at var(--mouse-x, 0) var(--mouse-y, 0), rgba(139, 92, 246, 0.15), transparent 40%);
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        .interactive-card:hover::before {
+            opacity: 1;
+        }
+        
+        /* Custom Custom Cursor */
+        @media (pointer: fine) {
+            #custom-cursor {
+                width: 20px;
+                height: 20px;
+                background: rgba(139, 92, 246, 0.2);
+                border: 1px solid rgba(6, 182, 212, 0.8);
+                border-radius: 50%;
+                position: fixed;
+                pointer-events: none;
+                z-index: 99999;
+                transform: translate(-50%, -50%);
+                transition: width 0.2s, height 0.2s, background 0.2s;
+            }
+            #custom-cursor-dot {
+                width: 6px;
+                height: 6px;
+                background: #06B6D4;
+                border-radius: 50%;
+                position: fixed;
+                pointer-events: none;
+                z-index: 99999;
+                transform: translate(-50%, -50%);
+                transition: transform 0.05s ease-out;
+            }
+        }
+    </style>
+</head>
+<body class="bg-brand-darkObsidian text-slate-100 font-sans antialiased transition-colors duration-500 overflow-x-hidden dark">
+
+    <!-- Custom Cursor elements -->
+    <div id="custom-cursor" class="hidden md:block"></div>
+    <div id="custom-cursor-dot" class="hidden md:block"></div>
+
+    <!-- Background mesh & decorative elements -->
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <!-- Ambient lighting layers -->
+        <div class="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-purple-900/20 blur-[150px] animate-pulse-slow"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[70%] h-[70%] rounded-full bg-blue-900/15 blur-[180px] animate-pulse-slow"></div>
+        <div class="absolute top-[35%] left-[40%] w-[40%] h-[40%] rounded-full bg-cyan-900/10 blur-[130px] animate-pulse-slow"></div>
+        
+        <!-- Canvas Star Field -->
+        <canvas id="starfield-canvas" class="w-full h-full opacity-40"></canvas>
+    </div>
+
+    <!-- Header / Navbar -->
+    <header class="fixed top-0 left-0 w-full z-50 transition-all duration-300 py-4 px-4 md:px-8">
+        <nav class="max-w-7xl mx-auto glass-panel rounded-2xl px-6 py-4 flex items-center justify-between transition-all duration-300">
+            <!-- Logo -->
+            <a href="#" class="flex items-center space-x-3 group">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-purple via-brand-blue to-brand-cyan p-[1.5px] shadow-lg shadow-purple-500/20">
+                    <div class="w-full h-full bg-brand-darkObsidian rounded-[10px] flex items-center justify-center transition-colors group-hover:bg-slate-900">
+                        <span class="font-outfit font-black text-xl text-transparent bg-clip-text bg-gradient-to-r from-brand-purple to-brand-cyan">N</span>
+                    </div>
+                </div>
+                <span class="font-outfit font-extrabold text-2xl tracking-wider text-white dark:text-white transition-colors duration-300">
+                    NEXORA<span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-cyan to-brand-purple">AI</span>
+                </span>
+            </a>
+
+            <!-- Desktop Links -->
+            <div class="hidden lg:flex items-center space-x-8 text-sm font-medium">
+                <a href="#features" class="text-slate-300 dark:text-slate-300 hover:text-brand-cyan transition-colors">Features</a>
+                <a href="#interactive-preview" class="text-slate-300 dark:text-slate-300 hover:text-brand-cyan transition-colors">Interactive Demo</a>
+                <a href="#stats" class="text-slate-300 dark:text-slate-300 hover:text-brand-cyan transition-colors">Performance Metrics</a>
+                <a href="#testimonials" class="text-slate-300 dark:text-slate-300 hover:text-brand-cyan transition-colors">Success Stories</a>
+                <a href="#pricing" class="text-slate-300 dark:text-slate-300 hover:text-brand-cyan transition-colors">Pricing</a>
+            </div>
+
+            <!-- Header Controls & Actions -->
+            <div class="flex items-center space-x-4">
+                <!-- Theme Switcher -->
+                <button id="theme-toggle" class="relative w-12 h-6 rounded-full bg-slate-800 p-1 flex items-center justify-between transition-colors outline-none focus:ring-2 focus:ring-brand-purple" aria-label="Toggle Theme">
+                    <span class="text-xs">🌙</span>
+                    <span class="text-xs">☀️</span>
+                    <div class="absolute left-1 w-4 h-4 rounded-full bg-gradient-to-tr from-brand-purple to-brand-cyan transform transition-transform duration-300" id="theme-toggle-dot"></div>
+                </button>
+
+                <!-- Call to action button -->
+                <a href="#pricing" class="hidden sm:inline-flex px-5 py-2.5 rounded-xl bg-gradient-to-r from-brand-purple via-brand-blue to-brand-cyan text-white font-medium text-sm transition-transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-purple-500/25 justify-center items-center">
+                    Get Started Free
+                </a>
+
+                <!-- Mobile menu toggle -->
+                <button id="mobile-menu-btn" class="lg:hidden text-white dark:text-slate-800 text-2xl focus:outline-none" aria-label="Toggle Menu">
+                    <i class="fa-solid fa-bars" id="menu-icon"></i>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Responsive Mobile Menu Dropdown -->
+        <div id="mobile-menu" class="hidden lg:hidden mt-3 max-w-7xl mx-auto glass-panel rounded-2xl p-6 transition-all duration-300 flex flex-col space-y-4">
+            <a href="#features" class="text-slate-300 hover:text-brand-cyan font-medium transition-colors border-b border-white/5 pb-2">Features</a>
+            <a href="#interactive-preview" class="text-slate-300 hover:text-brand-cyan font-medium transition-colors border-b border-white/5 pb-2">Interactive Demo</a>
+            <a href="#stats" class="text-slate-300 hover:text-brand-cyan font-medium transition-colors border-b border-white/5 pb-2">Performance Metrics</a>
+            <a href="#testimonials" class="text-slate-300 hover:text-brand-cyan font-medium transition-colors border-b border-white/5 pb-2">Success Stories</a>
+            <a href="#pricing" class="text-slate-300 hover:text-brand-cyan font-medium transition-colors pb-2">Pricing</a>
+            <a href="#pricing" class="w-full text-center px-5 py-3 rounded-xl bg-gradient-to-r from-brand-purple to-brand-cyan text-white font-medium text-sm transition-transform hover:scale-[1.02] shadow-lg">
+                Get Started Free
+            </a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen pt-32 pb-20 flex flex-col justify-center items-center px-4 overflow-hidden z-10" id="hero">
+        <div class="max-w-6xl mx-auto text-center space-y-8 flex flex-col items-center">
+            
+            <!-- Tech-label badge -->
+            <div class="inline-flex items-center space-x-2 px-4 py-2 rounded-full glass-panel border border-brand-purple/30 animate-pulse">
+                <span class="w-2 h-2 rounded-full bg-brand-cyan animate-ping"></span>
+                <span class="text-xs font-semibold uppercase tracking-widest text-brand-cyan">NEXORA 3.0 REVEALED</span>
+            </div>
+
+            <!-- Main Heading -->
+            <h1 class="font-outfit font-extrabold text-5xl md:text-7xl lg:text-8xl tracking-tight leading-[1.1] max-w-5xl">
+                Your AI Co-Pilot for
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-purple via-brand-blue to-brand-cyan drop-shadow-sm">
+                    Smarter Workflows
+                </span>
+            </h1>
+
+            <!-- Hero Subtext -->
+            <p class="text-slate-400 dark:text-slate-500 text-lg md:text-xl max-w-3xl leading-relaxed">
+                Connect your team, systems, and data into a secure neural enterprise cluster. Automated processes, predictions, and real-time operations inside an ultra-premium dashboard.
+            </p>
+
+            <!-- Actions row -->
+            <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6 w-full justify-center">
+                <a href="#pricing" class="magnetic-button relative inline-flex items-center justify-center px-8 py-4 rounded-xl bg-gradient-to-r from-brand-purple to-brand-cyan text-white font-bold text-base shadow-lg hover:shadow-cyan-500/20 transition-transform duration-300 hover:scale-[1.03] active:scale-[0.98]">
+                    Start Building Free <i class="fa-solid fa-arrow-right ml-2 text-sm"></i>
+                </a>
+                <a href="#interactive-preview" class="magnetic-button inline-flex items-center justify-center px-8 py-4 rounded-xl glass-panel text-white font-semibold text-base hover:bg-white/10 transition-colors border border-white/10 hover:border-white/20">
+                    <i class="fa-solid fa-play mr-2 text-brand-cyan text-sm"></i> Watch Sandbox
+                </a>
+            </div>
+
+            <!-- Live mini analytics pill -->
+            <div class="flex items-center space-x-8 py-3 px-6 rounded-2xl glass-panel text-xs text-slate-400 dark:text-slate-500 border border-white/5 divide-x divide-white/10">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-bolt text-brand-cyan"></i>
+                    <span>Latency: <strong class="text-white dark:text-slate-800" id="live-latency">14ms</strong></span>
+                </div>
+                <div class="pl-8 flex items-center space-x-2">
+                    <i class="fa-solid fa-shield-halved text-brand-purple"></i>
+                    <span>Encryption: <strong class="text-white dark:text-slate-800">Quantum Grade</strong></span>
+                </div>
+                <div class="pl-8 flex items-center space-x-2">
+                    <i class="fa-solid fa-users text-purple-400"></i>
+                    <span>Active Clusters: <strong class="text-white dark:text-slate-800">2,419</strong></span>
+                </div>
+            </div>
+
+            <!-- Floating Dashboard mockup (Dynamic Preview Element) -->
+            <div class="w-full max-w-5xl mt-12 relative animate-float">
+                <div class="absolute inset-0 bg-gradient-to-tr from-brand-purple/20 to-brand-cyan/20 rounded-2xl blur-[40px] opacity-70"></div>
+                <div class="relative rounded-2xl border border-white/10 glass-panel overflow-hidden shadow-2xl p-1 md:p-3">
+                    <div class="bg-brand-darkObsidian/90 rounded-xl overflow-hidden aspect-[16/9] relative flex flex-col">
+                        <!-- Simulated Operating System Bar -->
+                        <div class="bg-slate-900/80 px-4 py-3 flex items-center justify-between border-b border-white/5">
+                            <div class="flex space-x-2">
+                                <span class="w-3 h-3 rounded-full bg-red-500/80"></span>
+                                <span class="w-3 h-3 rounded-full bg-yellow-500/80"></span>
+                                <span class="w-3 h-3 rounded-full bg-green-500/80"></span>
+                            </div>
+                            <div class="text-xs text-slate-500 tracking-wider">nexora-terminal-prod-04.io</div>
+                            <div class="w-6 h-6 rounded-md bg-white/5 flex items-center justify-center">
+                                <i class="fa-solid fa-ellipsis-h text-slate-400 text-xs"></i>
+                            </div>
+                        </div>
+                        
+                        <!-- Mini Sandbox Layout -->
+                        <div class="flex-1 grid grid-cols-12 gap-3 p-3 text-left overflow-hidden">
+                            <!-- Left Sidebar Sim -->
+                            <div class="col-span-3 bg-slate-950/80 rounded-lg p-3 border border-white/5 space-y-4 hidden md:block">
+                                <div class="space-y-2">
+                                    <div class="h-2 w-12 bg-slate-800 rounded"></div>
+                                    <div class="h-6 w-full bg-slate-900/80 rounded border border-brand-purple/20 flex items-center px-2 text-[10px] text-brand-purple">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-brand-purple mr-1.5 animate-pulse"></span> Core Engine Active
+                                    </div>
+                                </div>
+                                <div class="space-y-1.5">
+                                    <div class="h-5 w-full bg-brand-purple/10 rounded flex items-center px-2 text-[10px] text-brand-purple font-medium">
+                                        <i class="fa-solid fa-chart-line mr-2"></i> Dashboard
+                                    </div>
+                                    <div class="h-5 w-full hover:bg-white/5 rounded flex items-center px-2 text-[10px] text-slate-500 font-medium">
+                                        <i class="fa-solid fa-circle-nodes mr-2"></i> Integrations
+                                    </div>
+                                    <div class="h-5 w-full hover:bg-white/5 rounded flex items-center px-2 text-[10px] text-slate-500 font-medium">
+                                        <i class="fa-solid fa-lock mr-2"></i> Vault Config
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Main Content Sim -->
+                            <div class="col-span-12 md:col-span-9 flex flex-col space-y-3 h-full justify-between">
+                                <!-- Cards Row -->
+                                <div class="grid grid-cols-3 gap-3">
+                                    <div class="bg-slate-950/50 p-3 rounded-lg border border-white/5">
+                                        <span class="text-[9px] uppercase tracking-wider text-slate-500">Live Throughput</span>
+                                        <div class="text-lg font-bold text-white mt-1">4.8 GB/s</div>
+                                    </div>
+                                    <div class="bg-slate-950/50 p-3 rounded-lg border border-white/5">
+                                        <span class="text-[9px] uppercase tracking-wider text-slate-500">GPU Clusters</span>
+                                        <div class="text-lg font-bold text-brand-cyan mt-1">16 Nodes</div>
+                                    </div>
+                                    <div class="bg-slate-950/50 p-3 rounded-lg border border-white/5">
+                                        <span class="text-[9px] uppercase tracking-wider text-slate-500">Security Index</span>
+                                        <div class="text-lg font-bold text-emerald-400 mt-1">99.9%</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Graphics Box -->
+                                <div class="flex-1 bg-slate-950/70 rounded-lg p-3 border border-white/5 relative overflow-hidden flex flex-col justify-between">
+                                    <div class="flex justify-between items-center z-10">
+                                        <span class="text-[10px] font-semibold text-slate-400">Global Neural Data Array</span>
+                                        <span class="text-[9px] text-slate-500">Continuous updates every 250ms</span>
+                                    </div>
+                                    <!-- Embedded dynamic graphical grid -->
+                                    <div class="flex items-end justify-between h-24 px-4 w-full relative z-10" id="hero-graph-bars">
+                                        <!-- Realtime generated HTML bars via JS -->
+                                    </div>
+                                    <!-- Dynamic lines and glowing grid -->
+                                    <div class="absolute inset-0 bg-[linear-gradient(to_right,#00000005_1px,transparent_1px),linear-gradient(to_bottom,#00000005_1px,transparent_1px)] bg-[size:14px_24px] pointer-events-none opacity-50"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scroll Indicator -->
+            <a href="#features" class="inline-flex flex-col items-center mt-12 text-slate-500 hover:text-white transition-colors">
+                <span class="text-xs uppercase tracking-wider mb-2">Scroll to discover</span>
+                <div class="w-6 h-10 rounded-full border border-slate-700 p-1 flex justify-center">
+                    <span class="w-1.5 h-1.5 rounded-full bg-brand-cyan animate-bounce mt-1"></span>
+                </div>
+            </a>
+        </div>
+    </section>
+
+    <!-- Trusted By / Marquee Section -->
+    <section class="py-12 border-t border-b border-white/5 bg-slate-950/40 overflow-hidden relative z-10">
+        <div class="max-w-6xl mx-auto px-4 mb-6 text-center">
+            <h3 class="text-xs font-semibold uppercase tracking-widest text-slate-500">TRUSTED BY LEADERS IN ENTERPRISE ARTIFICIAL INTELLIGENCE</h3>
+        </div>
+        
+        <!-- Marquee track -->
+        <div class="relative flex w-full overflow-hidden select-none">
+            <div class="flex space-x-12 animate-marquee whitespace-nowrap py-4">
+                <div class="flex items-center space-x-3 text-slate-400 text-lg font-outfit font-bold">
+                    <i class="fa-solid fa-atom text-brand-cyan"></i> <span>SYNTHIC SYSTEMS</span>
+                </div>
+                <div class="flex items-center space-x-3 text-slate-400 text-lg font-outfit font-bold">
+                    <i class="fa-solid fa-dna text-brand-purple"></i> <span>KORTEX BIOSCIENCE</span>
+                </div>
+                <div class="flex items-center space-x-3 text-slate-400 text-lg font-outfit font-bold">
+                    <i class="fa-solid fa-cube text-blue-400"></i> <span>VERTEX BLOCKCHAIN</span>
+                </div>
+                <div class="flex items-center space-x-3 text-slate-400 text-lg font-outfit font-bold">
+                    <i class="fa-solid fa-infinity text-teal-400"></i> <span>ORION MULTIVERSE</span>
+                </div>
+                <div class="flex items-center space-x-3 text-slate-400 text-lg font-outfit font-bold">
+                    <i class="fa-solid fa-bolt text-yellow-400"></i> <span>AETHER HYPERDRIVE</span>
+                </div>
+                <div class="flex items-center space-x-3 text-slate-400 text-lg font-outfit font-bold">
+                    <i class="fa-solid fa-microchip text-brand-cyan"></i> <span>NOVA QUANTUM</span>
+                </div>
+            </div>
+            <!-- Duplicate for infinite seamless scroll -->
+            <div class="flex space-x-12 animate-marquee whitespace-nowrap py-4" aria-hidden="true">
+                <div class="flex items-center space-x-3 text-slate-400 text-lg font-outfit font-bold">
+                    <i class="fa-solid fa-atom text-brand-cyan"></i> <span>SYNTHIC SYSTEMS</span>
+                </div>
+                <div class="flex items-center space-x-3 text-slate-400 text-lg font-outfit font-bold">
+                    <i class="fa-solid fa-dna text-brand-purple"></i> <span>KORTEX BIOSCIENCE</span>
+                </div>
+                <div class="flex items-center space-x-3 text-slate-400 text-lg font-outfit font-bold">
+                    <i class="fa-solid fa-cube text-blue-400"></i> <span>VERTEX BLOCKCHAIN</span>
+                </div>
+                <div class="flex items-center space-x-3 text-slate-400 text-lg font-outfit font-bold">
+                    <i class="fa-solid fa-infinity text-teal-400"></i> <span>ORION MULTIVERSE</span>
+                </div>
+                <div class="flex items-center space-x-3 text-slate-400 text-lg font-outfit font-bold">
+                    <i class="fa-solid fa-bolt text-yellow-400"></i> <span>AETHER HYPERDRIVE</span>
+                </div>
+                <div class="flex items-center space-x-3 text-slate-400 text-lg font-outfit font-bold">
+                    <i class="fa-solid fa-microchip text-brand-cyan"></i> <span>NOVA QUANTUM</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Bento Grid Section -->
+    <section class="py-24 px-4 max-w-7xl mx-auto relative z-10" id="features">
+        <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+            <span class="text-sm font-bold uppercase tracking-widest text-brand-cyan">Advanced Core Capabilities</span>
+            <h2 class="font-outfit font-extrabold text-4xl md:text-5xl">Everything you need, built on ultra-fast infrastructure</h2>
+            <p class="text-slate-400">Leverage a hyper-integrated system architecture constructed for modern software, cloud arrays, and complex AI models.</p>
+        </div>
+
+        <!-- Bento Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-6 gap-6">
+            
+            <!-- Card 1 (Span 3 md: Big Bento Grid Option) -->
+            <div class="interactive-card md:col-span-3 h-[380px] glass-panel rounded-3xl p-8 border border-white/10 flex flex-col justify-between group">
+                <div class="w-12 h-12 rounded-2xl bg-brand-purple/10 flex items-center justify-center border border-brand-purple/30 group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-robot text-2xl text-brand-purple"></i>
+                </div>
+                <div class="space-y-3">
+                    <h3 class="font-outfit font-bold text-2xl text-white">Autonomous AI Automation</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Let AI agents schedule, code, document, and test standard procedures in background nodes while your engineers orchestrate high-value architectures.</p>
+                </div>
+                <div class="pt-4 border-t border-white/5 flex items-center justify-between text-brand-cyan text-sm font-medium">
+                    <span>Explore Auto-Pipelines</span>
+                    <i class="fa-solid fa-arrow-right transform group-hover:translate-x-1 transition-transform"></i>
+                </div>
+            </div>
+
+            <!-- Card 2 (Span 3 md: High Performance Stats Option) -->
+            <div class="interactive-card md:col-span-3 h-[380px] glass-panel rounded-3xl p-8 border border-white/10 flex flex-col justify-between group">
+                <div class="w-12 h-12 rounded-2xl bg-brand-cyan/10 flex items-center justify-center border border-brand-cyan/30 group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-chart-line text-2xl text-brand-cyan"></i>
+                </div>
+                <div class="space-y-3">
+                    <h3 class="font-outfit font-bold text-2xl text-white">Live System Analytics</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Interactive node maps, real-time tracking, vector store utilization, and operational tracing variables optimized directly within beautiful telemetry grids.</p>
+                </div>
+                <div class="pt-4 border-t border-white/5 flex items-center justify-between text-brand-cyan text-sm font-medium">
+                    <span>View Analytics Matrix</span>
+                    <i class="fa-solid fa-arrow-right transform group-hover:translate-x-1 transition-transform"></i>
+                </div>
+            </div>
+
+            <!-- Card 3 (Span 2 md: Team Collaboration) -->
+            <div class="interactive-card md:col-span-2 h-[340px] glass-panel rounded-3xl p-6 border border-white/10 flex flex-col justify-between group">
+                <div class="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/30 group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-users text-xl text-blue-400"></i>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="font-outfit font-semibold text-xl text-white">Neural Team Clusters</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">Collaborate natively inside secure workspaces. Watch multiplayer prompts, system design schemas, and code reviews resolve in real-time.</p>
+                </div>
+                <div class="pt-2 flex items-center text-brand-cyan text-xs font-semibold">
+                    <span>Multiplayer Docs</span> <i class="fa-solid fa-chevron-right ml-1.5 text-[10px]"></i>
+                </div>
+            </div>
+
+            <!-- Card 4 (Span 2 md: Secure Cloud Sync) -->
+            <div class="interactive-card md:col-span-2 h-[340px] glass-panel rounded-3xl p-6 border border-white/10 flex flex-col justify-between group">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/30 group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-shield-halved text-xl text-emerald-400"></i>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="font-outfit font-semibold text-xl text-white">End-To-End Security</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">Every document, data query, and system instruction goes through quantum-resistant tunnels. Fully HIPAA, SOC2, and GDPR compliant.</p>
+                </div>
+                <div class="pt-2 flex items-center text-brand-cyan text-xs font-semibold">
+                    <span>View Compliance Pack</span> <i class="fa-solid fa-chevron-right ml-1.5 text-[10px]"></i>
+                </div>
+            </div>
+
+            <!-- Card 5 (Span 2 md: AI suggestions) -->
+            <div class="interactive-card md:col-span-2 h-[340px] glass-panel rounded-3xl p-6 border border-white/10 flex flex-col justify-between group">
+                <div class="w-10 h-10 rounded-xl bg-yellow-500/10 flex items-center justify-center border border-yellow-500/30 group-hover:scale-110 transition-transform">
+                    <i class="fa-solid fa-brain text-xl text-yellow-400"></i>
+                </div>
+                <div class="space-y-2">
+                    <h3 class="font-outfit font-semibold text-xl text-white">Cognitive Refinement</h3>
+                    <p class="text-slate-400 text-xs leading-relaxed">Receive contextual recommendations as you work. The engine profiles patterns and builds specialized scripts automatically to boost productivity.</p>
+                </div>
+                <div class="pt-2 flex items-center text-brand-cyan text-xs font-semibold">
+                    <span>View Engine Logic</span> <i class="fa-solid fa-chevron-right ml-1.5 text-[10px]"></i>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Interactive AI Dashboard Section -->
+    <section class="py-24 bg-slate-950/40 relative z-10 border-t border-b border-white/5" id="interactive-preview">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+                <span class="text-sm font-bold uppercase tracking-widest text-brand-purple">Experience the Engine</span>
+                <h2 class="font-outfit font-extrabold text-4xl md:text-5xl">Live Sandbox Environment</h2>
+                <p class="text-slate-400">Test Nexora’s live AI interface. Run instructions, observe active variables, and see simulated results immediately.</p>
+            </div>
+
+            <!-- Fully Functional Interface Simulator -->
+            <div class="w-full glass-panel rounded-3xl overflow-hidden border border-white/10 shadow-2xl flex flex-col lg:flex-row min-h-[600px]">
+                
+                <!-- Left Control Deck / Terminal Controls -->
+                <div class="w-full lg:w-[35%] bg-brand-darkObsidian/60 border-b lg:border-b-0 lg:border-r border-white/10 p-6 flex flex-col justify-between space-y-8">
+                    <div class="space-y-6">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-2 h-2 rounded-full bg-red-400"></span>
+                            <span class="w-2 h-2 rounded-full bg-yellow-400"></span>
+                            <span class="w-2 h-2 rounded-full bg-green-400"></span>
+                            <span class="text-xs text-slate-500 font-bold tracking-wider ml-4">SANDBOX DIRECTORY</span>
+                        </div>
+
+                        <!-- Config Selector Buttons -->
+                        <div class="space-y-3">
+                            <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-widest">Select AI Scenario</h4>
+                            <button class="w-full text-left p-4 rounded-xl border border-brand-purple/40 bg-brand-purple/10 text-white font-medium flex justify-between items-center transition-all cursor-pointer scenario-btn" onclick="selectScenario('latency', this)">
+                                <span class="flex items-center"><i class="fa-solid fa-chart-line mr-3 text-brand-purple"></i> Optimize Global Latency</span>
+                                <i class="fa-solid fa-circle-check text-brand-purple"></i>
+                            </button>
+                            <button class="w-full text-left p-4 rounded-xl border border-white/5 bg-white/5 text-slate-400 font-medium flex justify-between items-center transition-all cursor-pointer hover:bg-white/10 scenario-btn" onclick="selectScenario('database', this)">
+                                <span class="flex items-center"><i class="fa-solid fa-database mr-3 text-brand-cyan"></i> Shard Cloud Data Clusters</span>
+                                <i class="fa-solid fa-chevron-right text-slate-600"></i>
+                            </button>
+                            <button class="w-full text-left p-4 rounded-xl border border-white/5 bg-white/5 text-slate-400 font-medium flex justify-between items-center transition-all cursor-pointer hover:bg-white/10 scenario-btn" onclick="selectScenario('security', this)">
+                                <span class="flex items-center"><i class="fa-solid fa-shield-virus mr-3 text-emerald-400"></i> Audit Compliance Logs</span>
+                                <i class="fa-solid fa-chevron-right text-slate-600"></i>
+                            </button>
+                        </div>
+
+                        <!-- System metrics block -->
+                        <div class="p-4 rounded-xl bg-slate-950/80 border border-white/5 space-y-3">
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-400">Operational Temperature</span>
+                                <span class="text-white font-bold" id="metric-temp">42°C</span>
+                            </div>
+                            <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-gradient-to-r from-brand-purple to-brand-cyan h-full w-[65%] transition-all duration-500" id="metric-temp-bar"></div>
+                            </div>
+                            <div class="flex justify-between text-xs">
+                                <span class="text-slate-400">Neural Sync Accuracy</span>
+                                <span class="text-white font-bold" id="metric-sync">99.98%</span>
+                            </div>
+                            <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-gradient-to-r from-brand-purple to-brand-cyan h-full w-[99.98%] transition-all duration-500" id="metric-sync-bar"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CTA or warning inside sandbox -->
+                    <div class="text-xs text-slate-500 leading-relaxed border-t border-white/5 pt-4">
+                        <i class="fa-solid fa-circle-info text-brand-cyan mr-1"></i> Running mock system diagnostics. Connecting scenario inputs into virtual simulated output array.
+                    </div>
+                </div>
+
+                <!-- Right Live Sandbox Area -->
+                <div class="flex-1 bg-slate-950/80 p-6 flex flex-col justify-between space-y-6">
+                    <!-- Live Simulation Header -->
+                    <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-white/5">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></div>
+                            <span class="text-xs font-semibold tracking-wider text-slate-400 uppercase">Live Sandbox Active Terminal</span>
+                        </div>
+                        <div class="flex items-center space-x-2 bg-slate-900 px-3 py-1.5 rounded-lg border border-white/5">
+                            <span class="text-[10px] text-slate-500 uppercase">Interactive Speed</span>
+                            <span class="text-[11px] font-bold text-brand-cyan">Real-Time</span>
+                        </div>
+                    </div>
+
+                    <!-- Sandbox Interactive Chat & Processing Visualizer -->
+                    <div class="flex-1 min-h-[250px] flex flex-col justify-between relative">
+                        <div class="space-y-4" id="chat-messages-container">
+                            <!-- Dynamic System messages load here -->
+                            <div class="flex items-start space-x-3">
+                                <div class="w-8 h-8 rounded-lg bg-brand-purple/20 flex items-center justify-center text-xs text-brand-purple border border-brand-purple/40">
+                                    <i class="fa-solid fa-robot"></i>
+                                </div>
+                                <div class="bg-slate-900/60 border border-white/5 p-4 rounded-2xl max-w-[85%] text-xs leading-relaxed text-slate-300">
+                                    <span class="font-bold text-brand-purple block mb-1">Nexora AI Agent</span>
+                                    Welcome. I am initialized and ready to deploy scripts. Choose a scenario on the left or type your dynamic prompt below to process tasks.
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start space-x-3" id="live-typing-message" style="display:none;">
+                                <div class="w-8 h-8 rounded-lg bg-brand-cyan/20 flex items-center justify-center text-xs text-brand-cyan border border-brand-cyan/40">
+                                    <i class="fa-solid fa-gears animate-spin"></i>
+                                </div>
+                                <div class="bg-slate-900/60 border border-brand-cyan/20 p-4 rounded-2xl max-w-[85%] text-xs leading-relaxed text-slate-300">
+                                    <span class="font-bold text-brand-cyan block mb-1">Synthesizing Request...</span>
+                                    <p id="streaming-text-node">Analyzing vector database indices...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Graph / Visual Element representing output -->
+                        <div class="mt-6 p-4 rounded-2xl bg-brand-darkObsidian border border-white/5">
+                            <div class="flex justify-between items-center mb-4">
+                                <span class="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Dynamic Activity Waveform</span>
+                                <div class="flex items-center space-x-3">
+                                    <span class="text-xs text-brand-cyan font-semibold flex items-center">
+                                        <i class="fa-solid fa-arrows-spin animate-spin mr-1"></i> Syncing Node Matrix
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- Dynamic SVG Wave graph -->
+                            <div class="h-28 w-full relative">
+                                <svg class="w-full h-full text-brand-purple" viewBox="0 0 500 100" preserveAspectRatio="none">
+                                    <defs>
+                                        <linearGradient id="waveGrad" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stop-color="#8B5CF6" stop-opacity="0.4"/>
+                                            <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0.0"/>
+                                        </linearGradient>
+                                    </defs>
+                                    <path id="svg-wave-path" d="M 0 50 Q 125 10, 250 50 T 500 50 L 500 100 L 0 100 Z" fill="url(#waveGrad)" stroke="#8B5CF6" stroke-width="2"></path>
+                                    <path id="svg-wave-path-cyan" d="M 0 50 Q 125 90, 250 50 T 500 50" fill="none" stroke="#06B6D4" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.8"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Text input interactive line -->
+                    <div class="relative mt-4">
+                        <input type="text" id="sandbox-prompt-input" placeholder="Ask AI to write a task optimizer, analyze telemetry..." class="w-full py-4 pl-5 pr-12 rounded-xl bg-slate-900 border border-white/10 text-slate-100 text-sm focus:outline-none focus:border-brand-purple placeholder-slate-600">
+                        <button onclick="handleCustomPromptSubmit()" class="absolute right-2 top-2 w-10 h-10 rounded-lg bg-gradient-to-tr from-brand-purple to-brand-cyan text-white flex items-center justify-center hover:scale-105 transition-transform">
+                            <i class="fa-solid fa-arrow-up"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section with Scroll Animation Counters -->
+    <section class="py-24 max-w-7xl mx-auto px-4 relative z-10" id="stats">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Stat Item 1 -->
+            <div class="glass-panel rounded-3xl p-8 border border-white/5 text-center space-y-2 relative overflow-hidden group">
+                <div class="absolute -right-6 -bottom-6 text-9xl text-white/5 pointer-events-none font-outfit font-black group-hover:scale-110 transition-transform">12K</div>
+                <h3 class="text-slate-500 font-semibold text-sm uppercase tracking-widest">Active Enterprise Teams</h3>
+                <p class="font-outfit font-extrabold text-5xl text-white tracking-tight pt-2">
+                    <span class="countup-trigger" data-target="12000">0</span>+
+                </p>
+                <span class="text-xs text-brand-cyan block font-semibold"><i class="fa-solid fa-circle-up mr-1"></i> +14% Month-on-Month</span>
+            </div>
+
+            <!-- Stat Item 2 -->
+            <div class="glass-panel rounded-3xl p-8 border border-white/5 text-center space-y-2 relative overflow-hidden group">
+                <div class="absolute -right-6 -bottom-6 text-9xl text-white/5 pointer-events-none font-outfit font-black group-hover:scale-110 transition-transform">2.4M</div>
+                <h3 class="text-slate-500 font-semibold text-sm uppercase tracking-widest">Tasks Automated Daily</h3>
+                <p class="font-outfit font-extrabold text-5xl text-white tracking-tight pt-2">
+                    <span class="countup-trigger" data-target="2400000">0</span>
+                </p>
+                <span class="text-xs text-brand-purple block font-semibold"><i class="fa-solid fa-clock-rotate-left mr-1"></i> Saving ~40k hours/week</span>
+            </div>
+
+            <!-- Stat Item 3 -->
+            <div class="glass-panel rounded-3xl p-8 border border-white/5 text-center space-y-2 relative overflow-hidden group">
+                <div class="absolute -right-6 -bottom-6 text-9xl text-white/5 pointer-events-none font-outfit font-black group-hover:scale-110 transition-transform">98%</div>
+                <h3 class="text-slate-500 font-semibold text-sm uppercase tracking-widest">Satisfaction Score</h3>
+                <p class="font-outfit font-extrabold text-5xl text-white tracking-tight pt-2">
+                    <span class="countup-trigger" data-target="98" data-decimals="1">0</span>%
+                </p>
+                <span class="text-xs text-emerald-400 block font-semibold"><i class="fa-solid fa-thumbs-up mr-1"></i> Industry Benchmark Top 1%</span>
+            </div>
+
+            <!-- Stat Item 4 -->
+            <div class="glass-panel rounded-3xl p-8 border border-white/5 text-center space-y-2 relative overflow-hidden group">
+                <div class="absolute -right-6 -bottom-6 text-9xl text-white/5 pointer-events-none font-outfit font-black group-hover:scale-110 transition-transform">24/7</div>
+                <h3 class="text-slate-500 font-semibold text-sm uppercase tracking-widest">AI Agent Availability</h3>
+                <p class="font-outfit font-extrabold text-5xl text-white tracking-tight pt-2">
+                    99.99%
+                </p>
+                <span class="text-xs text-brand-cyan block font-semibold"><i class="fa-solid fa-signal mr-1"></i> Dynamic SLA protection</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Performance Metrics Showcase (Lighthouse-inspired SVG circle graphs) -->
+    <section class="py-24 px-4 bg-slate-950/60 border-t border-b border-white/5 relative z-10">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                <!-- Performance Description Column (5 Cols) -->
+                <div class="lg:col-span-5 space-y-6">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Engine Efficiency Score</span>
+                    </div>
+                    <h2 class="font-outfit font-extrabold text-4xl md:text-5xl">Built to score green. Anywhere. Always.</h2>
+                    <p class="text-slate-400 leading-relaxed text-sm md:text-base">
+                        Nexora’s client dashboard and cloud instances utilize compressed data buffers, minimal client dependencies, and edge caching techniques. Your tools will load with lightning speed on any device.
+                    </p>
+                    <div class="flex flex-col space-y-3 pt-4 border-t border-white/5 text-slate-400 text-xs">
+                        <div class="flex items-center"><i class="fa-solid fa-check text-emerald-400 mr-2.5 text-sm"></i> Zero bloated dependencies or unnecessary client bundles</div>
+                        <div class="flex items-center"><i class="fa-solid fa-check text-emerald-400 mr-2.5 text-sm"></i> Server Side Rendered interfaces for pristine SEO indexes</div>
+                        <div class="flex items-center"><i class="fa-solid fa-check text-emerald-400 mr-2.5 text-sm"></i> WCAG Accessibility compliant for universal access</div>
+                    </div>
+                </div>
+
+                <!-- Performance Visualization Rings Column (7 Cols) -->
+                <div class="lg:col-span-7 grid grid-cols-2 sm:grid-cols-4 gap-6 justify-center items-center">
+                    
+                    <!-- Circular Meter 1 -->
+                    <div class="glass-panel p-6 rounded-3xl border border-white/5 flex flex-col items-center justify-center space-y-4">
+                        <div class="relative w-24 h-24">
+                            <!-- SVG Circle -->
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                <circle class="text-slate-800" stroke-width="8" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50"></circle>
+                                <circle class="text-emerald-500 transition-all duration-1000 ease-out lighthouse-circle" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="251.2" data-score="100" stroke-linecap="round" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50"></circle>
+                            </svg>
+                            <span class="absolute inset-0 flex items-center justify-center font-outfit font-extrabold text-xl text-white">100</span>
+                        </div>
+                        <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Performance</span>
+                    </div>
+
+                    <!-- Circular Meter 2 -->
+                    <div class="glass-panel p-6 rounded-3xl border border-white/5 flex flex-col items-center justify-center space-y-4">
+                        <div class="relative w-24 h-24">
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                <circle class="text-slate-800" stroke-width="8" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50"></circle>
+                                <circle class="text-emerald-500 transition-all duration-1000 ease-out lighthouse-circle" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="251.2" data-score="98" stroke-linecap="round" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50"></circle>
+                            </svg>
+                            <span class="absolute inset-0 flex items-center justify-center font-outfit font-extrabold text-xl text-white">98</span>
+                        </div>
+                        <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Accessibility</span>
+                    </div>
+
+                    <!-- Circular Meter 3 -->
+                    <div class="glass-panel p-6 rounded-3xl border border-white/5 flex flex-col items-center justify-center space-y-4">
+                        <div class="relative w-24 h-24">
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                <circle class="text-slate-800" stroke-width="8" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50"></circle>
+                                <circle class="text-emerald-500 transition-all duration-1000 ease-out lighthouse-circle" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="251.2" data-score="100" stroke-linecap="round" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50"></circle>
+                            </svg>
+                            <span class="absolute inset-0 flex items-center justify-center font-outfit font-extrabold text-xl text-white">100</span>
+                        </div>
+                        <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Best Practices</span>
+                    </div>
+
+                    <!-- Circular Meter 4 -->
+                    <div class="glass-panel p-6 rounded-3xl border border-white/5 flex flex-col items-center justify-center space-y-4">
+                        <div class="relative w-24 h-24">
+                            <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
+                                <circle class="text-slate-800" stroke-width="8" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50"></circle>
+                                <circle class="text-emerald-500 transition-all duration-1000 ease-out lighthouse-circle" stroke-width="8" stroke-dasharray="251.2" stroke-dashoffset="251.2" data-score="99" stroke-linecap="round" stroke="currentColor" fill="transparent" r="40" cx="50" cy="50"></circle>
+                            </svg>
+                            <span class="absolute inset-0 flex items-center justify-center font-outfit font-extrabold text-xl text-white">99</span>
+                        </div>
+                        <span class="text-xs font-bold uppercase tracking-widest text-slate-400">SEO</span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Grid Section -->
+    <section class="py-24 max-w-7xl mx-auto px-4 relative z-10" id="testimonials">
+        <div class="text-center max-w-3xl mx-auto mb-16 space-y-4">
+            <span class="text-sm font-bold uppercase tracking-widest text-brand-cyan">Trusted Globally</span>
+            <h2 class="font-outfit font-extrabold text-4xl md:text-5xl">Proven results with fast integration</h2>
+            <p class="text-slate-400">Listen to reviews from fast-growing engineering organizations scaling workloads with Nexora.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Testimonial 1 -->
+            <div class="interactive-card glass-panel rounded-3xl p-8 border border-white/5 flex flex-col justify-between space-y-6 hover:border-brand-purple/30">
+                <p class="text-slate-300 text-sm leading-relaxed italic">
+                    "Transitioning our database arrays to Nexora’s active cluster was surprisingly easy. The dashboard simulated optimal shards instantly. Now we handle 2M+ micro-requests at a steady 12ms latency."
+                </p>
+                <div class="flex items-center space-x-4">
+                    <img src="https://placehold.co/100x100/12131C/ffffff?text=E" alt="Elena Rostova" class="w-12 h-12 rounded-xl object-cover border border-white/10" onerror="this.onerror=null; this.src='https://placehold.co/100x100/12131c/06B6D4?text=ER';">
+                    <div>
+                        <h4 class="font-outfit font-bold text-white text-sm">Elena Rostova</h4>
+                        <span class="text-xs text-slate-500">VP Architecture, Synthic Systems</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Testimonial 2 -->
+            <div class="interactive-card glass-panel rounded-3xl p-8 border border-white/5 flex flex-col justify-between space-y-6 hover:border-brand-purple/30">
+                <p class="text-slate-300 text-sm leading-relaxed italic">
+                    "The neural copilot workflow suggestion engine acts like a high-fidelity senior architect beside my junior team. Automation modules are reliable, and security logs audit perfectly on our SOC2 checks."
+                </p>
+                <div class="flex items-center space-x-4">
+                    <img src="https://placehold.co/100x100/12131C/ffffff?text=M" alt="Marcus Vance" class="w-12 h-12 rounded-xl object-cover border border-white/10" onerror="this.onerror=null; this.src='https://placehold.co/100x100/12131c/8B5CF6?text=MV';">
+                    <div>
+                        <h4 class="font-outfit font-bold text-white text-sm">Marcus Vance</h4>
+                        <span class="text-xs text-slate-500">Principal Architect, Nova Quantum</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Testimonial 3 -->
+            <div class="interactive-card glass-panel rounded-3xl p-8 border border-white/5 flex flex-col justify-between space-y-6 hover:border-brand-purple/30">
+                <p class="text-slate-300 text-sm leading-relaxed italic">
+                    "We automated our secure deployment pipeline in just hours. Highly recommend the Interactive Sandbox—it perfectly aligned with our cloud system specs before committing to production clusters."
+                </p>
+                <div class="flex items-center space-x-4">
+                    <img src="https://placehold.co/100x100/12131C/ffffff?text=A" alt="Amara Kwei" class="w-12 h-12 rounded-xl object-cover border border-white/10" onerror="this.onerror=null; this.src='https://placehold.co/100x100/12131c/3B82F6?text=AK';">
+                    <div>
+                        <h4 class="font-outfit font-bold text-white text-sm">Amara Kwei</h4>
+                        <span class="text-xs text-slate-500">VP Engineering, Kortex Bio</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="py-24 px-4 bg-slate-950/40 border-t border-b border-white/5 relative z-10" id="pricing">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center max-w-3xl mx-auto mb-16 space-y-6">
+                <span class="text-sm font-bold uppercase tracking-widest text-brand-cyan">Flexible Scalability</span>
+                <h2 class="font-outfit font-extrabold text-4xl md:text-5xl">Transparent pricing, built to scale with your cluster</h2>
+                <p class="text-slate-400">Start with raw components or unleash premium global GPU infrastructure. Change or cancel plans anytime.</p>
+                
+                <!-- Monthly / Yearly Billing Toggle Switch -->
+                <div class="inline-flex items-center bg-slate-900 border border-white/10 p-1.5 rounded-2xl">
+                    <button class="px-5 py-2.5 rounded-xl text-xs font-bold transition-all text-white bg-brand-purple" id="toggle-monthly-btn" onclick="setBillingCycle('monthly')">
+                        Monthly
+                    </button>
+                    <button class="px-5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-500 hover:text-white" id="toggle-yearly-btn" onclick="setBillingCycle('yearly')">
+                        Yearly <span class="ml-1 text-[10px] bg-brand-cyan/20 text-brand-cyan px-2 py-0.5 rounded-full uppercase font-black">SAVE 20%</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Pricing Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+                
+                <!-- Plan 1: Starter -->
+                <div class="interactive-card glass-panel rounded-3xl p-8 border border-white/5 flex flex-col justify-between space-y-8 relative overflow-hidden group">
+                    <div class="space-y-4">
+                        <span class="text-xs uppercase font-extrabold tracking-widest text-slate-500">Basic Exploration</span>
+                        <h3 class="font-outfit font-bold text-2xl text-white">Starter Pack</h3>
+                        <p class="text-slate-400 text-xs">For independent builders experimenting with secure vector workflows.</p>
+                        
+                        <!-- Dynamic Price tag -->
+                        <div class="pt-4">
+                            <span class="font-outfit font-extrabold text-5xl text-white" id="price-starter">$0</span>
+                            <span class="text-xs text-slate-500" id="period-starter">/mo</span>
+                        </div>
+                    </div>
+
+                    <!-- Bullet Checklist -->
+                    <div class="space-y-3 pt-6 border-t border-white/5 flex-1">
+                        <div class="flex items-center text-xs text-slate-300">
+                            <i class="fa-solid fa-circle-check text-brand-purple mr-2.5"></i> 2 Standard Clusters
+                        </div>
+                        <div class="flex items-center text-xs text-slate-300">
+                            <i class="fa-solid fa-circle-check text-brand-purple mr-2.5"></i> Up to 100 requests / day
+                        </div>
+                        <div class="flex items-center text-xs text-slate-300">
+                            <i class="fa-solid fa-circle-check text-brand-purple mr-2.5"></i> Standard Vector Sync (800ms)
+                        </div>
+                        <div class="flex items-center text-xs text-slate-400 opacity-50">
+                            <i class="fa-solid fa-circle-xmark text-slate-600 mr-2.5"></i> Dedicated Edge Nodes
+                        </div>
+                    </div>
+
+                    <button class="w-full py-4 rounded-xl bg-slate-900 border border-white/10 text-white font-bold text-sm hover:bg-slate-800 transition-colors">
+                        Deploy Sandbox Instance
+                    </button>
+                </div>
+
+                <!-- Plan 2: Pro (Premium Highlighted Plan) -->
+                <div class="interactive-card glass-panel rounded-3xl p-8 border-2 border-brand-purple/50 bg-brand-purple/5 flex flex-col justify-between space-y-8 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 bg-brand-purple text-white text-[10px] uppercase font-black tracking-widest py-1.5 px-6 rounded-bl-xl shadow">
+                        POPULAR CHOICE
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <span class="text-xs uppercase font-extrabold tracking-widest text-brand-cyan">Production System</span>
+                        <h3 class="font-outfit font-bold text-2xl text-white">Nexora Pro</h3>
+                        <p class="text-slate-300 text-xs">For growing tech organizations needing seamless AI routing arrays.</p>
+                        
+                        <div class="pt-4">
+                            <span class="font-outfit font-extrabold text-5xl text-white" id="price-pro">$79</span>
+                            <span class="text-xs text-slate-400" id="period-pro">/mo</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 pt-6 border-t border-brand-purple/20 flex-1">
+                        <div class="flex items-center text-xs text-slate-200">
+                            <i class="fa-solid fa-circle-check text-brand-cyan mr-2.5"></i> Unlimited Clusters
+                        </div>
+                        <div class="flex items-center text-xs text-slate-200">
+                            <i class="fa-solid fa-circle-check text-brand-cyan mr-2.5"></i> Unlimited Processing Queries
+                        </div>
+                        <div class="flex items-center text-xs text-slate-200">
+                            <i class="fa-solid fa-circle-check text-brand-cyan mr-2.5"></i> Ultra-Fast Sync (12ms)
+                        </div>
+                        <div class="flex items-center text-xs text-slate-200">
+                            <i class="fa-solid fa-circle-check text-brand-cyan mr-2.5"></i> Dedicated API Edge Gateway
+                        </div>
+                        <div class="flex items-center text-xs text-slate-200">
+                            <i class="fa-solid fa-circle-check text-brand-cyan mr-2.5"></i> Quantum Shield Encryption
+                        </div>
+                    </div>
+
+                    <button class="w-full py-4 rounded-xl bg-gradient-to-tr from-brand-purple to-brand-cyan text-white font-bold text-sm hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-lg shadow-purple-500/20">
+                        Acquire Pro Cluster
+                    </button>
+                </div>
+
+                <!-- Plan 3: Enterprise -->
+                <div class="interactive-card glass-panel rounded-3xl p-8 border border-white/5 flex flex-col justify-between space-y-8 relative overflow-hidden group">
+                    <div class="space-y-4">
+                        <span class="text-xs uppercase font-extrabold tracking-widest text-slate-500">Custom Infrastructure</span>
+                        <h3 class="font-outfit font-bold text-2xl text-white">Enterprise Node</h3>
+                        <p class="text-slate-400 text-xs">For massive multi-region systems requiring absolute compliance and power.</p>
+                        
+                        <div class="pt-4">
+                            <span class="font-outfit font-extrabold text-5xl text-white" id="price-enterprise">$499</span>
+                            <span class="text-xs text-slate-500" id="period-enterprise">/mo</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 pt-6 border-t border-white/5 flex-1">
+                        <div class="flex items-center text-xs text-slate-300">
+                            <i class="fa-solid fa-circle-check text-brand-purple mr-2.5"></i> Dedicated GPU Hardware (H100 Nodes)
+                        </div>
+                        <div class="flex items-center text-xs text-slate-300">
+                            <i class="fa-solid fa-circle-check text-brand-purple mr-2.5"></i> Custom LLM Fine-Tuning Models
+                        </div>
+                        <div class="flex items-center text-xs text-slate-300">
+                            <i class="fa-solid fa-circle-check text-brand-purple mr-2.5"></i> Dedicated Slack & Teams Integration Engineers
+                        </div>
+                        <div class="flex items-center text-xs text-slate-300">
+                            <i class="fa-solid fa-circle-check text-brand-purple mr-2.5"></i> custom SLA Agreements & Audits
+                        </div>
+                    </div>
+
+                    <button class="w-full py-4 rounded-xl bg-slate-900 border border-white/10 text-white font-bold text-sm hover:bg-slate-800 transition-colors">
+                        Initiate Node Setup
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA Section with Subscription Box -->
+    <section class="py-32 px-4 max-w-6xl mx-auto relative z-10">
+        <div class="relative rounded-3xl overflow-hidden glass-panel border border-brand-purple/30 p-8 md:p-16 text-center space-y-8">
+            <!-- Background glow behind container -->
+            <div class="absolute inset-0 bg-gradient-to-r from-brand-purple/10 to-brand-cyan/10 pointer-events-none"></div>
+            
+            <div class="max-w-2xl mx-auto space-y-4 relative z-10">
+                <span class="text-sm font-bold uppercase tracking-widest text-brand-cyan">INSTANT DEPLOYMENT AVAILABLE</span>
+                <h2 class="font-outfit font-extrabold text-4xl md:text-6xl text-white">Supercharge your team operations with AI</h2>
+                <p class="text-slate-300 text-sm md:text-base leading-relaxed">
+                    Deploy your secure private cluster node in minutes. Join thousands of high-velocity developers executing tasks with Nexora AI co-pilot.
+                </p>
+            </div>
+
+            <!-- Email container inside interactive modal form -->
+            <div class="max-w-md mx-auto relative z-10">
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <input type="email" id="cta-email-input" placeholder="Enter corporate email..." class="flex-1 px-5 py-4 rounded-xl bg-brand-darkObsidian border border-white/10 text-white text-sm focus:outline-none focus:border-brand-purple placeholder-slate-600">
+                    <button onclick="handleEmailSubscribe()" class="px-8 py-4 rounded-xl bg-gradient-to-tr from-brand-purple to-brand-cyan text-white font-bold text-sm hover:scale-105 transition-transform cursor-pointer">
+                        Get Started Free
+                    </button>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-3 text-center sm:text-left pl-2">No credit card required. 14-day premium sandbox trial.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Global Floating Action / Status Message Box instead of standard Alerts -->
+    <div id="status-toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 max-w-md p-4 rounded-xl glass-panel border border-emerald-500/30 flex items-center space-x-3 text-xs shadow-2xl">
+        <div class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div>
+            <span class="font-bold text-white block" id="toast-title">Subscription Active</span>
+            <span class="text-slate-400" id="toast-desc">Successfully joined Nexora cluster waiting list.</span>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="bg-slate-950/80 border-t border-white/5 py-16 px-4 relative z-10">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12">
+            
+            <!-- Logo & Brand Column -->
+            <div class="md:col-span-4 space-y-6">
+                <a href="#" class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-purple to-brand-cyan p-[1.5px]">
+                        <div class="w-full h-full bg-brand-darkObsidian rounded-[7px] flex items-center justify-center">
+                            <span class="font-outfit font-black text-sm text-brand-cyan">N</span>
+                        </div>
+                    </div>
+                    <span class="font-outfit font-bold text-lg text-white">NEXORA AI</span>
+                </a>
+                <p class="text-slate-500 text-xs leading-relaxed">
+                    Building the next-generation operating system layer for complex enterprise artificial intelligence. Streamlining systems, sharding nodes, securing operations.
+                </p>
+                <!-- Social links -->
+                <div class="flex space-x-4 text-slate-500">
+                    <a href="#" class="hover:text-brand-purple transition-colors" aria-label="Twitter"><i class="fa-brands fa-twitter text-lg"></i></a>
+                    <a href="#" class="hover:text-brand-cyan transition-colors" aria-label="Discord"><i class="fa-brands fa-discord text-lg"></i></a>
+                    <a href="#" class="hover:text-blue-400 transition-colors" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in text-lg"></i></a>
+                    <a href="#" class="hover:text-slate-300 transition-colors" aria-label="GitHub"><i class="fa-brands fa-github text-lg"></i></a>
+                </div>
+            </div>
+
+            <!-- Navigation Links Columns (3 x 2 cols) -->
+            <div class="md:col-span-2 space-y-4">
+                <h4 class="text-xs font-bold uppercase tracking-widest text-slate-400">Products</h4>
+                <ul class="space-y-2 text-xs text-slate-500 font-medium">
+                    <li><a href="#" class="hover:text-brand-cyan transition-colors">Neural Clusters</a></li>
+                    <li><a href="#" class="hover:text-brand-cyan transition-colors">Vector Engines</a></li>
+                    <li><a href="#" class="hover:text-brand-cyan transition-colors">Active Sandbox</a></li>
+                    <li><a href="#" class="hover:text-brand-cyan transition-colors">Gateway Security</a></li>
+                </ul>
+            </div>
+
+            <div class="md:col-span-2 space-y-4">
+                <h4 class="text-xs font-bold uppercase tracking-widest text-slate-400">Resources</h4>
+                <ul class="space-y-2 text-xs text-slate-500 font-medium">
+                    <li><a href="#" class="hover:text-brand-cyan transition-colors">Developer API</a></li>
+                    <li><a href="#" class="hover:text-brand-cyan transition-colors">Model Training Docs</a></li>
+                    <li><a href="#" class="hover:text-brand-cyan transition-colors">Compliance Audits</a></li>
+                    <li><a href="#" class="hover:text-brand-cyan transition-colors">Systems Registry</a></li>
+                </ul>
+            </div>
+
+            <div class="md:col-span-2 space-y-4">
+                <h4 class="text-xs font-bold uppercase tracking-widest text-slate-400">Enterprise</h4>
+                <ul class="space-y-2 text-xs text-slate-500 font-medium">
+                    <li><a href="#" class="hover:text-brand-cyan transition-colors">Custom SLAs</a></li>
+                    <li><a href="#" class="hover:text-brand-cyan transition-colors">H100 Node Leases</a></li>
+                    <li><a href="#" class="hover:text-brand-cyan transition-colors">White-Glove Setup</a></li>
+                    <li><a href="#" class="hover:text-brand-cyan transition-colors">Sales Contact</a></li>
+                </ul>
+            </div>
+
+            <!-- Newsletter Box (2 cols) -->
+            <div class="md:col-span-2 space-y-4">
+                <h4 class="text-xs font-bold uppercase tracking-widest text-slate-400">Systems Registry Status</h4>
+                <div class="p-4 rounded-xl bg-slate-900 border border-white/5 space-y-3">
+                    <div class="flex items-center space-x-2 text-[10px] text-emerald-400 font-bold">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                        <span>ALL CLUSTERS ACTIVE</span>
+                    </div>
+                    <span class="text-[10px] text-slate-500 block">Version 3.40.2 (Build 90432)</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Copyright Line -->
+        <div class="max-w-7xl mx-auto mt-16 pt-8 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-600 gap-4">
+            <span>&copy; 2026 Nexora Technologies Inc. All rights reserved. Quantum Security Certified.</span>
+            <div class="flex space-x-6">
+                <a href="#" class="hover:underline">Privacy Policy</a>
+                <a href="#" class="hover:underline">Terms of Service</a>
+                <a href="#" class="hover:underline">Cookie Audit</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Custom Engine Logic JavaScript -->
+    <script>
+        // Custom Cursor Tracker logic
+        document.addEventListener('mousemove', (e) => {
+            const cursor = document.getElementById('custom-cursor');
+            const dot = document.getElementById('custom-cursor-dot');
+            if (cursor && dot) {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+                dot.style.left = e.clientX + 'px';
+                dot.style.top = e.clientY + 'px';
+            }
+        });
+
+        // Hover expand cursor effect for interactive components
+        const interactiveElements = document.querySelectorAll('button, a, input, .interactive-card, .scenario-btn');
+        interactiveElements.forEach(elem => {
+            elem.addEventListener('mouseenter', () => {
+                const cursor = document.getElementById('custom-cursor');
+                if (cursor) {
+                    cursor.style.width = '45px';
+                    cursor.style.height = '45px';
+                    cursor.style.background = 'rgba(139, 92, 246, 0.1)';
+                }
+            });
+            elem.addEventListener('mouseleave', () => {
+                const cursor = document.getElementById('custom-cursor');
+                if (cursor) {
+                    cursor.style.width = '20px';
+                    cursor.style.height = '20px';
+                    cursor.style.background = 'rgba(139, 92, 246, 0.2)';
+                }
+            });
+        });
+
+        // Dynamic mouse-follow lighting coordinates for Premium Bento Cards
+        const cards = document.querySelectorAll('.interactive-card');
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+
+        // Toggle Responsive Mobile Menu
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIcon = document.getElementById('menu-icon');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            if (mobileMenu.classList.contains('hidden')) {
+                menuIcon.className = 'fa-solid fa-bars';
+            } else {
+                menuIcon.className = 'fa-solid fa-xmark';
+            }
+        });
+
+        // Dynamic theme switching framework (Dark / Light toggle)
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeDot = document.getElementById('theme-toggle-dot');
+        const docBody = document.body;
+
+        // Persist theme using localStorage
+        if (localStorage.getItem('theme') === 'light') {
+            enableLightTheme();
+        } else {
+            enableDarkTheme();
+        }
+
+        themeToggle.addEventListener('click', () => {
+            if (docBody.classList.contains('dark')) {
+                enableLightTheme();
+            } else {
+                enableDarkTheme();
+            }
+        });
+
+        function enableLightTheme() {
+            docBody.classList.remove('dark');
+            docBody.classList.add('light');
+            docBody.classList.remove('bg-brand-darkObsidian', 'text-slate-100');
+            docBody.classList.add('bg-brand-lightBg', 'text-slate-800');
+            themeDot.style.transform = 'translateX(24px)';
+            localStorage.setItem('theme', 'light');
+        }
+
+        function enableDarkTheme() {
+            docBody.classList.remove('light');
+            docBody.classList.add('dark');
+            docBody.classList.remove('bg-brand-lightBg', 'text-slate-800');
+            docBody.classList.add('bg-brand-darkObsidian', 'text-slate-100');
+            themeDot.style.transform = 'translateX(0px)';
+            localStorage.setItem('theme', 'dark');
+        }
+
+        // Animated live throughput background metric bars inside hero preview
+        const heroGraphContainer = document.getElementById('hero-graph-bars');
+        if (heroGraphContainer) {
+            for (let i = 0; i < 28; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'w-[2%] bg-gradient-to-t from-brand-purple to-brand-cyan rounded-t-sm transition-all duration-300';
+                const height = Math.floor(Math.random() * 85) + 15;
+                bar.style.height = `${height}%`;
+                heroGraphContainer.appendChild(bar);
+            }
+            setInterval(() => {
+                const bars = heroGraphContainer.children;
+                for (let b of bars) {
+                    const height = Math.floor(Math.random() * 85) + 15;
+                    b.style.height = `${height}%`;
+                }
+            }, 1000);
+        }
+
+        // Live updating latency values
+        setInterval(() => {
+            const lat = document.getElementById('live-latency');
+            if (lat) {
+                lat.innerText = `${Math.floor(Math.random() * 5) + 11}ms`;
+            }
+        }, 3000);
+
+        // Simulated Interactive AI Chatbot and Telemetry Engine
+        const scenarios = {
+            latency: {
+                title: "Optimizing Global Latency",
+                prompt: "Let's analyze active routing configurations across our 16 nodes to decrease core sync speed below 15ms.",
+                response: "Deploying multi-region vector sharding scripts. Routing latency clusters away from overloaded AWS eu-west data paths. Rerouting via private Cloudflare tunnels... Latency successfully dropped to 12ms. Accuracy sync finalized at 99.98%.",
+                temp: "41°C",
+                tempPct: "45%",
+                sync: "99.98%"
+            },
+            database: {
+                title: "Cloud Data Cluster Partitioning",
+                prompt: "Partition local server vector indices dynamically into secure multi-tenant cloud storage structures.",
+                response: "Connecting database node. Partitioning 45,000 document vector files. Mapping relational structures with active isolated metadata partitions. Quantum protection shield configured for active database transactions... Task accomplished.",
+                temp: "54°C",
+                tempPct: "75%",
+                sync: "99.95%"
+            },
+            security: {
+                title: "Compliance Log Auditing",
+                prompt: "Scan our system cluster activity logs for potential vector query injection risks or HIPAA non-compliance indicators.",
+                response: "Scanning recent query activity. Analyzed 4,194 vector execution pathways. Identified 0 anomalies. Verifying end-to-end symmetric encryption keys. Compliance audit report created successfully. Threat index: 0.00%.",
+                temp: "37°C",
+                tempPct: "32%",
+                sync: "100.00%"
+            }
+        };
+
+        function selectScenario(key, btnElement) {
+            // Update active state style on scenario buttons
+            const buttons = document.querySelectorAll('.scenario-btn');
+            buttons.forEach(btn => {
+                btn.className = "w-full text-left p-4 rounded-xl border border-white/5 bg-white/5 text-slate-400 font-medium flex justify-between items-center transition-all cursor-pointer hover:bg-white/10 scenario-btn";
+                const icon = btn.querySelector('.fa-circle-check');
+                if (icon) {
+                    icon.className = "fa-solid fa-chevron-right text-slate-600";
+                }
+            });
+
+            btnElement.className = "w-full text-left p-4 rounded-xl border border-brand-purple/40 bg-brand-purple/10 text-white font-medium flex justify-between items-center transition-all cursor-pointer scenario-btn";
+            const statusCheck = btnElement.querySelector('i:last-child');
+            if (statusCheck) {
+                statusCheck.className = "fa-solid fa-circle-check text-brand-purple";
+            }
+
+            const current = scenarios[key];
+            triggerSimulateAIResponse(current.prompt, current.response, current.temp, current.tempPct, current.sync);
+        }
+
+        // Simulate typing streaming responses in sandbox console
+        let streamingInterval;
+        function triggerSimulateAIResponse(prompt, responseText, tempStr, tempPct, syncStr) {
+            clearInterval(streamingInterval);
+            
+            // Show typing state loading box
+            const typingBox = document.getElementById('live-typing-message');
+            const streamingText = document.getElementById('streaming-text-node');
+            typingBox.style.display = 'flex';
+            streamingText.innerText = "Processing vector instructions...";
+            
+            // Generate some random wave transformations in wave SVG during computing
+            const wavePath = document.getElementById('svg-wave-path');
+            const wavePathCyan = document.getElementById('svg-wave-path-cyan');
+            wavePath.setAttribute('d', "M 0 50 Q 125 95, 250 10 T 500 50 L 500 100 L 0 100 Z");
+            wavePathCyan.setAttribute('d', "M 0 50 Q 125 5, 250 95 T 500 50");
+
+            let index = 0;
+            const textToStream = responseText;
+            streamingText.innerText = "";
+
+            setTimeout(() => {
+                streamingInterval = setInterval(() => {
+                    if (index < textToStream.length) {
+                        streamingText.innerText += textToStream.charAt(index);
+                        index++;
+                    } else {
+                        clearInterval(streamingInterval);
+                        // Update simulated dashboard physical system stats once writing finishes
+                        document.getElementById('metric-temp').innerText = tempStr;
+                        document.getElementById('metric-temp-bar').style.width = tempPct;
+                        document.getElementById('metric-sync').innerText = syncStr;
+                        document.getElementById('metric-sync-bar').style.width = syncStr;
+                        
+                        // Set wave back to calm steady status
+                        wavePath.setAttribute('d', "M 0 50 Q 125 35, 250 65 T 500 50 L 500 100 L 0 100 Z");
+                        wavePathCyan.setAttribute('d', "M 0 50 Q 125 65, 250 35 T 500 50");
+                    }
+                }, 10);
+            }, 800);
+        }
+
+        // Let user enter their own instructions inside sandbox console prompt
+        function handleCustomPromptSubmit() {
+            const input = document.getElementById('sandbox-prompt-input');
+            const promptVal = input.value.trim();
+            if (!promptVal) return;
+
+            const simulatedResponse = `Analyzing dynamic prompt request [${promptVal}]. Deploying virtual worker instance to cluster node 04. Constructing vector embedding pathways... Successfully processed prompt metrics. Output sync resolved at 99.99%. No security hazards found.`;
+            triggerSimulateAIResponse(promptVal, simulatedResponse, "49°C", "60%", "99.99%");
+            input.value = "";
+        }
+
+        // Pricing Toggles (Monthly/Yearly) logic
+        function setBillingCycle(cycle) {
+            const monthlyBtn = document.getElementById('toggle-monthly-btn');
+            const yearlyBtn = document.getElementById('toggle-yearly-btn');
+            
+            // Prices structures
+            const prices = {
+                monthly: { starter: "$0", pro: "$79", enterprise: "$499", period: "/mo" },
+                yearly: { starter: "$0", pro: "$63", enterprise: "$399", period: "/mo, billed yearly" }
+            };
+
+            if (cycle === 'monthly') {
+                monthlyBtn.className = "px-5 py-2.5 rounded-xl text-xs font-bold transition-all text-white bg-brand-purple";
+                yearlyBtn.className = "px-5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-500 hover:text-white";
+                
+                document.getElementById('price-starter').innerText = prices.monthly.starter;
+                document.getElementById('price-pro').innerText = prices.monthly.pro;
+                document.getElementById('price-enterprise').innerText = prices.monthly.enterprise;
+                
+                document.getElementById('period-starter').innerText = prices.monthly.period;
+                document.getElementById('period-pro').innerText = prices.monthly.period;
+                document.getElementById('period-enterprise').innerText = prices.monthly.period;
+            } else {
+                yearlyBtn.className = "px-5 py-2.5 rounded-xl text-xs font-bold transition-all text-white bg-brand-purple";
+                monthlyBtn.className = "px-5 py-2.5 rounded-xl text-xs font-bold transition-all text-slate-500 hover:text-white";
+                
+                document.getElementById('price-starter').innerText = prices.yearly.starter;
+                document.getElementById('price-pro').innerText = prices.yearly.pro;
+                document.getElementById('price-enterprise').innerText = prices.yearly.enterprise;
+                
+                document.getElementById('period-starter').innerText = prices.yearly.period;
+                document.getElementById('period-pro').innerText = prices.yearly.period;
+                document.getElementById('period-enterprise').innerText = prices.yearly.period;
+            }
+        }
+
+        // Scroll trigger intersection observer for Counters & Lighthouse meters
+        const observerOptions = {
+            threshold: 0.2
+        };
+
+        const counterObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counterElem = entry.target;
+                    const targetVal = parseFloat(counterElem.getAttribute('data-target'));
+                    const duration = 2000; // 2 seconds
+                    let startVal = 0;
+                    const startTime = performance.now();
+
+                    function animateCount(timestamp) {
+                        const elapsed = timestamp - startTime;
+                        const progress = Math.min(elapsed / duration, 1);
+                        
+                        // Ease out quad
+                        const easeProgress = progress * (2 - progress);
+                        const currentVal = Math.floor(easeProgress * targetVal);
+                        
+                        if (targetVal >= 1000000) {
+                            counterElem.innerText = (currentVal / 1000000).toFixed(1) + 'M';
+                        } else if (targetVal >= 1000) {
+                            counterElem.innerText = (currentVal / 1000).toFixed(0) + 'K';
+                        } else {
+                            counterElem.innerText = currentVal;
+                        }
+
+                        if (progress < 1) {
+                            requestAnimationFrame(animateCount);
+                        } else {
+                            // Perfect final value alignment
+                            if (targetVal >= 1000000) {
+                                counterElem.innerText = (targetVal / 1000000).toFixed(1) + 'M';
+                            } else if (targetVal >= 1000) {
+                                counterElem.innerText = (targetVal / 1000).toFixed(0) + 'K';
+                            } else {
+                                counterElem.innerText = targetVal;
+                            }
+                        }
+                    }
+                    requestAnimationFrame(animateCount);
+                    observer.unobserve(counterElem);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.countup-trigger').forEach(counter => {
+            counterObserver.observe(counter);
+        });
+
+        // Lighthouse Circles Score Reveal animation
+        const lighthouseObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const circle = entry.target;
+                    const score = parseInt(circle.getAttribute('data-score'));
+                    // 2 * PI * R (Radius is 40) = 251.2
+                    const maxOffset = 251.2;
+                    const targetOffset = maxOffset - (score / 100) * maxOffset;
+                    
+                    circle.style.strokeDashoffset = targetOffset;
+                    observer.unobserve(circle);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.lighthouse-circle').forEach(circle => {
+            lighthouseObserver.observe(circle);
+        });
+
+        // Particle starfield background generation
+        window.addEventListener('load', () => {
+            const canvas = document.getElementById('starfield-canvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                let width = canvas.width = window.innerWidth;
+                let height = canvas.height = window.innerHeight;
+
+                const particles = [];
+                const particleCount = 75;
+
+                for (let i = 0; i < particleCount; i++) {
+                    particles.push({
+                        x: Math.random() * width,
+                        y: Math.random() * height,
+                        radius: Math.random() * 1.5 + 0.5,
+                        speedX: (Math.random() - 0.5) * 0.15,
+                        speedY: (Math.random() - 0.5) * 0.15,
+                        alpha: Math.random() * 0.5 + 0.2
+                    });
+                }
+
+                function draw() {
+                    ctx.clearRect(0, 0, width, height);
+                    particles.forEach(p => {
+                        ctx.save();
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(139, 92, 246, ${p.alpha})`;
+                        ctx.shadowBlur = 10;
+                        ctx.shadowColor = '#8B5CF6';
+                        ctx.fill();
+                        ctx.restore();
+
+                        p.x += p.speedX;
+                        p.y += p.speedY;
+
+                        // Warp borders
+                        if (p.x < 0) p.x = width;
+                        if (p.x > width) p.x = 0;
+                        if (p.y < 0) p.y = height;
+                        if (p.y > height) p.y = 0;
+                    });
+                    requestAnimationFrame(draw);
+                }
+
+                draw();
+
+                window.addEventListener('resize', () => {
+                    width = canvas.width = window.innerWidth;
+                    height = canvas.height = window.innerHeight;
+                });
+            }
+        });
+
+        // Toast success messenger handler (replaces raw alert dialogues)
+        function triggerToast(title, message) {
+            const toast = document.getElementById('status-toast');
+            document.getElementById('toast-title').innerText = title;
+            document.getElementById('toast-desc').innerText = message;
+            
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 4000);
+        }
+
+        // Email subscribe handler
+        function handleEmailSubscribe() {
+            const emailInput = document.getElementById('cta-email-input');
+            const email = emailInput.value.trim();
+            if (email && email.includes('@')) {
+                triggerToast("System Connected", "Your enterprise cluster has been reserved. Check email confirmation.");
+                emailInput.value = "";
+            } else {
+                triggerToast("Invalid Setup", "Please enter a valid corporate email configuration layout.");
+            }
+        }
+    </script>
+</body>
+</html>
